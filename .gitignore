@@ -1,7 +1,6 @@
 .DS_Store
 .gradle
 build
-gradle
 **/node_modules
 **/bower_components
 *.ipr

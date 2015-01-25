@@ -5,22 +5,139 @@
 
   "Parameters" : {
     "KeyName": {
-      "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
       "Type": "AWS::EC2::KeyPair::KeyName",
-      "ConstraintDescription" : "must be the name of an existing EC2 KeyPair."
+      "ConstraintDescription": "must be the name of an existing EC2 KeyPair."
     },
-
-    "InstanceType" : {
-      "Description" : "WebServer EC2 instance type",
-      "Type" : "String",
-      "Default" : "t2.micro",
-      "AllowedValues" : [ "t1.micro", "t2.micro", "t2.small", "t2.medium", "m1.small", "m1.medium", "m1.large", "m1.xlarge", "m2.xlarge", "m2.2xlarge", "m2.4xlarge", "m3.medium", "m3.large", "m3.xlarge", "m3.2xlarge", "c1.medium", "c1.xlarge", "c3.large", "c3.xlarge", "c3.2xlarge", "c3.4xlarge", "c3.8xlarge", "g2.2xlarge", "r3.large", "r3.xlarge", "r3.2xlarge", "r3.4xlarge", "r3.8xlarge", "i2.xlarge", "i2.2xlarge", "i2.4xlarge", "i2.8xlarge", "hi1.4xlarge", "hs1.8xlarge", "cr1.8xlarge", "cc2.8xlarge", "cg1.4xlarge"]
-      ,
-      "ConstraintDescription" : "must be a valid EC2 instance type."
+    "DBName": {
+      "Default": "itunes2spotify",
+      "Description": "MySQL database name",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+      "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters."
     },
-
-    "SSHLocation" : {
-      "Description" : "The IP address range that can be used to SSH to the EC2 instances",
+    "DBUser": {
+      "NoEcho": "true",
+      "Description": "Username for MySQL database access",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "16",
+      "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+      "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters."
+    },
+    "DBPassword": {
+      "NoEcho": "true",
+      "Description": "Password for MySQL database access",
+      "Type": "String",
+      "MinLength": "8",
+      "MaxLength": "41",
+      "AllowedPattern": "[a-zA-Z0-9]*",
+      "ConstraintDescription": "must contain only alphanumeric characters."
+    },
+    "DBAllocatedStorage": {
+      "Default": "5",
+      "Description": "The size of the database (Gb)",
+      "Type": "Number",
+      "MinValue": "5",
+      "MaxValue": "1024",
+      "ConstraintDescription": "must be between 5 and 1024Gb."
+    },
+    "DBInstanceClass": {
+      "Description": "The database instance type",
+      "Type": "String",
+      "Default": "db.t1.micro",
+      "AllowedValues": [
+        "db.t1.micro",
+        "db.m1.small",
+        "db.m1.medium",
+        "db.m1.large",
+        "db.m1.xlarge",
+        "db.m2.xlarge",
+        "db.m2.2xlarge",
+        "db.m2.4xlarge",
+        "db.m3.medium",
+        "db.m3.large",
+        "db.m3.xlarge",
+        "db.m3.2xlarge",
+        "db.r3.large",
+        "db.r3.xlarge",
+        "db.r3.2xlarge",
+        "db.r3.4xlarge",
+        "db.r3.8xlarge",
+        "db.m2.xlarge",
+        "db.m2.2xlarge",
+        "db.m2.4xlarge",
+        "db.cr1.8xlarge"
+      ],
+      "ConstraintDescription": "must select a valid database instance type."
+    },
+    "MultiAZDatabase": {
+      "Default": "false",
+      "Description": "Create a ulti-AZ MySQL Amazon RDS database instance",
+      "Type": "String",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "ConstraintDescription": "must be either true or false."
+    },
+    "WebServerCapacity": {
+      "Default": "1",
+      "Description": "The initial number of WebServer instances",
+      "Type": "Number",
+      "MinValue": "1",
+      "MaxValue": "1",
+      "ConstraintDescription": "must be between 1 and 5 EC2 instances."
+    },
+    "InstanceType": {
+      "Description": "WebServer EC2 instance type",
+      "Type": "String",
+      "Default": "t2.micro",
+      "AllowedValues": [
+        "t1.micro",
+        "t2.micro",
+        "t2.small",
+        "t2.medium",
+        "m1.small",
+        "m1.medium",
+        "m1.large",
+        "m1.xlarge",
+        "m2.xlarge",
+        "m2.2xlarge",
+        "m2.4xlarge",
+        "m3.medium",
+        "m3.large",
+        "m3.xlarge",
+        "m3.2xlarge",
+        "c1.medium",
+        "c1.xlarge",
+        "c3.large",
+        "c3.xlarge",
+        "c3.2xlarge",
+        "c3.4xlarge",
+        "c3.8xlarge",
+        "g2.2xlarge",
+        "r3.large",
+        "r3.xlarge",
+        "r3.2xlarge",
+        "r3.4xlarge",
+        "r3.8xlarge",
+        "i2.xlarge",
+        "i2.2xlarge",
+        "i2.4xlarge",
+        "i2.8xlarge",
+        "hi1.4xlarge",
+        "hs1.8xlarge",
+        "cr1.8xlarge",
+        "cc2.8xlarge",
+        "cg1.4xlarge"
+      ],
+      "ConstraintDescription": "must be a valid EC2 instance type."
+    },
+    "SSHLocation": {
+      "Description": " The IP address range that can be used to SSH to the EC2 instances",
       "Type": "String",
       "MinLength": "9",
       "MaxLength": "18",
@@ -86,14 +203,36 @@
   },
 
   "Resources" : {
-    "EC2Instance" : {
-      "Type" : "AWS::EC2::Instance",
-      "Properties" : {
-        "InstanceType" : { "Ref" : "InstanceType" },
-        "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
-        "KeyName" : { "Ref" : "KeyName" },
-        "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" },
-          { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] }
+    "ElasticLoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "AvailabilityZones": {
+          "Fn::GetAZs": ""
+        },
+        "CrossZone": "true",
+        "LBCookieStickinessPolicy": [
+          {
+            "PolicyName": "CookieBasedPolicy",
+            "CookieExpirationPeriod": "30"
+          }
+        ],
+        "Listeners": [
+          {
+            "LoadBalancerPort": "80",
+            "InstancePort": "3000",
+            "Protocol": "HTTP",
+            "PolicyNames": [
+              "CookieBasedPolicy"
+            ]
+          }
+        ],
+        "HealthCheck": {
+          "Target": "HTTP:3000/",
+          "HealthyThreshold": "2",
+          "UnhealthyThreshold": "5",
+          "Interval": "10",
+          "Timeout": "5"
+        }
       }
     },
     "WebServerGroup" : {
@@ -107,10 +246,25 @@
         },
         "MinSize" : "1",
         "MaxSize" : "1",
-        "DesiredCapacity" : "1",
+        "DesiredCapacity" : {
+          "Ref" : "WebServerCapacity"
+        },
         "LoadBalancerNames" : [
           { "Ref" : "ElasticLoadBalancer" }
         ]
+      },
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Timeout": "PT30M"
+        }
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MinInstancesInService": "1",
+          "MaxBatchSize": "1",
+          "PauseTime": "PT30M",
+          "WaitOnResourceSignals": "true"
+        }
       }
     },
     "LaunchConfig" : {
@@ -118,7 +272,71 @@
       "Metadata" : {
         "AWS::CloudFormation::Init" : {
           "configSets" : {
-            "full_install": [ "install_application" ]
+            "full_install": [ "install_cfn", "install_application" ]
+          },
+          "install_cfn": {
+            "files": {
+              "/etc/cfn/cfn-hup.conf": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "[main]\n",
+                      "stack=",
+                      {
+                        "Ref": "AWS::StackId"
+                      },
+                      "\n",
+                      "region=",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "\n"
+                    ]
+                  ]
+                },
+                "mode": "000400",
+                "owner": "root",
+                "group": "root"
+              },
+              "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "[cfn-auto-reloader-hook]\n",
+                      "triggers=post.update\n",
+                      "path=Resources.LaunchConfig.Metadata.AWS::CloudFormation::Init\n",
+                      "action=/opt/aws/bin/cfn-init -v ",
+                      "         --stack ",
+                      {
+                        "Ref": "AWS::StackName"
+                      },
+                      "         --resource LaunchConfig ",
+                      "         --configsets full_install ",
+                      "         --region ",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "\n",
+                      "runas=root\n"
+                    ]
+                  ]
+                }
+              }
+            },
+            "services": {
+              "sysvinit": {
+                "cfn-hup": {
+                  "enabled": "true",
+                  "ensureRunning": "true",
+                  "files": [
+                    "/etc/cfn/cfn-hup.conf",
+                    "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+                  ]
+                }
+              }
+            }
           },
           "install_application" : {
             "packages" : {
@@ -136,20 +354,140 @@
                       "#!/bin/bash -xe\n",
                       "export PATH=$PATH:/usr/local/bin\n",
                       "cd /home/ec2-user\n",
+                      "sudo yum update -y\n"
+                      "# Kill the running java server\n",
                       "if pgrep java &> /dev/null ; then pkill -TERM java ; fi\n",
-                      "git clone  \n",
-                      "\n",
-                      "\n",
-                      "\n",
+                      "# Install NodeJS and bower\n",
+                      "curl -sL https://rpm.nodesource.com/setup | sudo bash -\n",
+                      "sudo yum install -y gcc-c++ make nodejs\n",
+                      "sudo npm install -g bower\n",
+                      "git clone https://github.com/pmaccart/itunes2spotify.git\n",
+                      "cd itunes2spotify/src/main/webapp\n",
+                      "npm install\n",
+                      "cd ../../../\n",
+                      "chmod +x gradlew\n",
+                      "npm install && bower install -f -s\n",
+                      "./gradlew bootRun\n"
                     ]
                   ]
-                }
+                },
+                "mode": "000555",
+                "owner": "ec2-user",
+                "group": "ec2-user"
+              }
+            },
+            "commands": {
+              "install_application": {
+                "command": "su ec2-user -c /tmp/install_application > /var/log/install_application.log 2>&1"
               }
             }
           }
         }
+      },
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                {
+                  "Ref": "InstanceType"
+                },
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "WebServerSecurityGroup"
+          }
+        ],
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -xe\n",
+                "yum update -y aws-cfn-bootstrap\n",
+                "/opt/aws/bin/cfn-init -v ",
+                "         --stack ",
+                {
+                  "Ref": "AWS::StackId"
+                },
+                "         --resource LaunchConfig ",
+                "         --configsets full_install ",
+                "         --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "\n",
+                "/opt/aws/bin/cfn-signal -e $? ",
+                "         --stack ",
+                {
+                  "Ref": "AWS::StackId"
+                },
+                "         --resource WebServerGroup ",
+                "         --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "\n"
+              ]
+            ]
+          }
+        }
       }
-    }
+    },
+    "WebServerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable HTTP access via port 3000 locked down to the load balancer + SSH access",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3000",
+            "ToPort": "3000",
+            "SourceSecurityGroupOwnerId": {
+              "Fn::GetAtt": [
+                "ElasticLoadBalancer",
+                "SourceSecurityGroup.OwnerAlias"
+              ]
+            },
+            "SourceSecurityGroupName": {
+              "Fn::GetAtt": [
+                "ElasticLoadBalancer",
+                "SourceSecurityGroup.GroupName"
+              ]
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": {
+              "Ref": "SSHLocation"
+            }
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : "8080",
+            "ToPort" : "8080",
+            "CidrIp" :  "0.0.0.0/0"
+          }
+        ]
+      }
+    },
 
     "InstanceSecurityGroup" : {
       "Type" : "AWS::EC2::SecurityGroup",
@@ -171,25 +509,24 @@
   },
 
   "Outputs" : {
-    "InstanceId" : {
-      "Description" : "InstanceId of the newly created EC2 instance",
-      "Value" : { "Ref" : "EC2Instance" }
-    },
-    "AZ" : {
-      "Description" : "Availability Zone of the newly created EC2 instance",
-      "Value" : { "Fn::GetAtt" : [ "EC2Instance", "AvailabilityZone" ] }
-    },
-    "PublicDNS" : {
-      "Description" : "Public DNSName of the newly created EC2 instance",
-      "Value" : { "Fn::GetAtt" : [ "EC2Instance", "PublicDnsName" ] }
-    },
-    "PublicIP" : {
-      "Description" : "Public IP address of the newly created EC2 instance",
-      "Value" : { "Fn::GetAtt" : [ "EC2Instance", "PublicIp" ] }
-    },
-    "WebsiteURL" : {
-      "Value" : { "Fn::Join" : ["", ["http://", { "Fn::GetAtt" : [ "EC2Instance", "PublicDnsName" ]}, "/"]] },
-      "Description" : "iTunes2Spotify Website"
+
+    "WebsiteURL": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "ElasticLoadBalancer",
+                "DNSName"
+              ]
+            },
+            "/notes"
+          ]
+        ]
+      },
+      "Description": "URL for newly created Rails application"
     }
   }
 }
