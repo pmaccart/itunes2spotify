@@ -1,0 +1,61 @@
+<div>
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{track.name}} - {{track.artist}}</h3>
+    </div>
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-4">Name:</div>
+        <div class="col-xs-8">{{track.name}}</div>
+      </div>
+      <div class="row">
+        <div class="col-xs-4">Artist:</div>
+        <div class="col-xs-8">{{track.artist}}</div>
+      </div>
+      <div class="row">
+        <div class="col-xs-4">Album:</div>
+        <div class="col-xs-8">{{track.album}}</div>
+      </div>
+      <div class="row">
+        <div class="col-xs-4">Year:</div>
+        <div class="col-xs-8">{{track.year}}</div>
+      </div>
+      <div class="row">
+        <div class="col-xs-4">Spotify URI:</div>
+        <div class="col-xs-8">{{track.spotifyUri}} | <button ng-click="showSearch=true"class="btn btn-link">Edit</button></div>
+      </div>
+      <div ng-show="showSearch">
+        <form name="searchForm" ng-submit="trackCtrl.doSearch(search.track, search.artist)">
+          <div class="form-group">
+            <label for="track">Track: </label>
+            <input type="text" id="track" class="form-control" placeholder="Track name" ng-model="search.track"/>
+          </div>
+          <div class="form-group">
+            <label for="artist">Artist: </label>
+            <input type="text" id="artist" class="form-control" placeholder="Artist name" ng-model="search.artist"/>
+          </div>
+          <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        <div ng-show="searchErrorMsg" class="alert alert-danger" ng-bind="searchErrorMsg"></div>
+
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Arist</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="result in searchResults">
+              <td>{{result.name}}</td>
+              <td>{{result.artist}}</td>
+              <td><button class="btn btn-link" ng-click="trackCtrl.link(result.uri)">Select</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

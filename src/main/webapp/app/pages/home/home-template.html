@@ -1,0 +1,10 @@
+<div>
+  <h1>iTunes2Spotify</h1>
+
+  <h2>Your Playlists</h2>
+    <div ng-repeat="playlist in playlists" ng-init="isCollapsed = true">
+      <h4>
+        <a ng-href="#/playlists/{{playlist.playlistId}}">{{playlist.name}}</a>
+        <span class="glyphicon glyphicon-ok" ng-show="playlist.spotifyId != null"></span>
+      </h4>
+</div>

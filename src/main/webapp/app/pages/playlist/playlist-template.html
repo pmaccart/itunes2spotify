@@ -1,0 +1,37 @@
+<div>
+  <h4>
+    <span>{{playlist.name}}</span>
+    <button class="btn btn-default" ng-click="playlistCtrl.linkPlaylist(playlist)">Link Playlist</button>
+    <span class="glyphicon glyphicon-ok" ng-show="playlist.spotifyId != null"></span>
+    <button class="btn btn-primary" ng-click="playlistCtrl.publishPlaylist(playlist)">Publish</button>
+  </h4>
+  <div class="alert alert-info" ng-show="publishing">Publishing...</div>
+  <div class="alert" ng-show="showAlert" ng-class="alertClass" ng-bind="alertMessage"></div>
+  <div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th ng-click="predicate = (predicate == 'name' ? '-name' : 'name')">Name</th>
+          <th ng-click="predicate = (predicate == 'artist' ? '-artist' : 'artist')">Artist</th>
+          <th ng-click="predicate = (predicate == 'album' ? '-album' : 'album')">Album</th>
+          <th ng-click="predicate = (predicate == 'genre' ? '-genre' : 'genre')">Genre</th>
+          <th ng-click="predicate = (predicate == 'year' ? '-year' : 'year')">Year</th>
+          <th ng-click="predicate = (predicate == 'playCount' ? '-playCount' : 'playCount')">Playcount</th>
+          <th ng-click="predicate = (predicate == 'spotifyUri playCount' ? '-spotifyUri playCount' : 'spotifyUri')">Linked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="track in playlist.tracks | orderBy:predicate">
+          <td><a ng-href="#/playlists/{{playlist.playlistId}}/tracks/{{track.trackId}}">{{track.name}}</a></td>
+          <td>{{track.artist}}</td>
+          <td>{{track.album}}</td>
+          <td>{{track.genre}}</td>
+          <td>{{track.year}}</td>
+          <td>{{track.playCount}}</td>
+          <td>{{track.spotifyUri}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
